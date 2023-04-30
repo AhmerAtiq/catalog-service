@@ -1,11 +1,20 @@
 package com.polarbookshop.catalogservice.domain;
 
+import java.time.Instant;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Version;
+
 public record Book(//
+		@Id //
+		Long id, //
 
 		// Not null, Either 10 digit or 13 digit
 		@NotBlank(message = "The book ISBN must be defined.") //
@@ -22,6 +31,19 @@ public record Book(//
 
 		@NotNull(message = "The book price must be defined.") //
 		@Positive(message = "The book price must be greater than zero.") //
-		Double price) //
-{
+		Double price, //
+
+		String publisher, //
+
+		@CreatedDate //
+		Instant createdDate, //
+
+		@LastModifiedDate Instant lastModifiedDate, //
+
+		@Version //
+		int version) {
+
+	public static Book of(String isbn, String title, String author, Double price, String publisher) {
+		return new Book(null, isbn, title, author, price, publisher, null, null, 0);
+	}
 }

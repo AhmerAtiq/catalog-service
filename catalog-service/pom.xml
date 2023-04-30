@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.10</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.polarbookshop</groupId>
 	<artifactId>catalog-service</artifactId>
@@ -16,6 +17,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2021.0.6</spring-cloud.version>
+		<testcontainersVersion>1.17.3</testcontainersVersion>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -46,10 +48,8 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-config</artifactId>
-		</dependency>
+		<!-- <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-config</artifactId> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
@@ -58,6 +58,30 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${testcontainersVersion}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -65,9 +89,39 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+
+				<configuration>
+					<image>
+						<!-- In this configuration only small letters are supported in path.
+							Instead of AhmerAtiq use ahmeratiq-->
+						<!-- <name>ghcr.io/AhmerAtiq/catalog-service</name>  -->
+						<name>ghcr.io/ahmeratiq/catalog-service</name>
+						<publish>true</publish>
+					</image>
+					<environmentVariables>
+						<BP_JVM_VERSION>17.*</BP_JVM_VERSION>
+					</environmentVariables>
+
+					<docker>
+						<publishRegistry>
+							<!-- container registry properties are externalized and will be passed with build command-->
+							<username>
+								${project.properties.registryUsername}
+							</username>
+							<password>
+								${project.properties.registryToken}
+							</password>
+							<url>
+								${project.properties.registryUrl}
+							</url>
+						</publishRegistry>
+					</docker>
+				</configuration>
+
 			</plugin>
 		</plugins>
 	</build>
+
 
 	<dependencyManagement>
 		<dependencies>
